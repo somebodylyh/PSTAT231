@@ -21,21 +21,48 @@ indent3 = '            '
 ```
 
 
-1. Write an `R` function that returns the following dispersion measures:
-    * Estimator of standard deviation (SD):
-
-        $$\text{SD} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_{i} - \bar{x})^2}$$
+1. Descriptive summary statistics (10 pts in total) Given the lack of further information on the
+    problem domain, it is wise to investigate some of the statistical properties of the data, so as to get a
+    better grasp of the problem. It is always a good idea to start our analysis with some kind of exploratory
+    data analysis. A first idea of the statistical properties of the data can be obtained through a summary
+    of its descriptive statistics.
+    * (2pts) Count the number of observations in each season using summarise() in dplyr.
 ```{r sd-function, indent=indent2}
-s.d <- function(x){
-    n <- length(x) # Sample size
-    s2 <- sum((x - mean(x))^2)/(n-1) # sample variance
-    s.d <- sqrt(s2) # sample standard deviation 
-    return(s.d)
-}
+library(dplyr)
+algae_bloom <- read.table("algaeBloom.txt", header = FALSE, na.strings = "XXXXXXX")
+algae_bloom %>%
+    group_by(V1) %>%
+    summarise(n = n())
 ```
-    * Estimator of mean absolute deviation (MAD):
+    * (1 pts) Are there missing values in this dataset? (2 pts) Calculate the mean and variance of each
+    chemical (Ignore a1 through a7). (1 pts) What do you notice about the magnitude of the two
+    quantities for different chemicals?
+```{r mad-function, indent=indent2}
+library(dplyr)
 
-        $$\text{MAD} = \frac{1}{n}\sum_{i=1}^{n}|x_{i} - \bar{x}|$$
+algae_bloom <- read.table("algaeBloom.txt", 
+                          header = FALSE,
+                          na.strings = "XXXXXXX")
+
+colnames(algae_bloom) <- c(
+    "season", "size", "speed",           
+    "pH", "temp", "oxygen", "chloride",  
+    "nitrogen", "ammonia", "phosphate", "conductivity",  
+    "a1", "a2", "a3", "a4", "a5", "a6", "a7" 
+)
+
+sum(is.na(algae_bloom)) 
+
+chemicals <- algae_bloom %>%
+    select(pH:conductivity)  
+
+chemical_stats <- chemicals %>%
+    summarise(across(everything(), 
+                     list(mean = ~mean(., na.rm = TRUE),
+                          var = ~var(., na.rm = TRUE))))
+
+print(chemical_stats)
+```
 ```{r mad-function, indent=indent2}
 mean.abs.d <- function(x){
     n <- length(x) # Sample size
