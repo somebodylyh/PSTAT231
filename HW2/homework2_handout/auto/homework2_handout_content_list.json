@@ -1,0 +1,662 @@
+[
+    {
+        "type": "text",
+        "text": "Homework 2 ",
+        "text_level": 1,
+        "bbox": [
+            428,
+            114,
+            571,
+            136
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "PSTAT 131/231, Fall 2025 ",
+        "bbox": [
+            385,
+            162,
+            612,
+            181
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Due on Thursday Nov 6, 2025 at 23:59 pm ",
+        "text_level": 1,
+        "bbox": [
+            290,
+            199,
+            707,
+            218
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Following packages are needed below: ",
+        "bbox": [
+            88,
+            258,
+            356,
+            273
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "library(tidyverse) library(ISLR) library(ROCR) ",
+        "bbox": [
+            84,
+            280,
+            240,
+            324
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Note: If you are working with a partner, please submit only one homework per group with both names. Submit your Rmarkdown (.Rmd) and the compiled pdf or html file. ",
+        "bbox": [
+            83,
+            338,
+            910,
+            368
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "• Make sure that both group members are in 131 or both in 232.   \n• Please indicate if you (or your partner) are in 131 or 231. ",
+        "bbox": [
+            106,
+            376,
+            576,
+            407
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Linear regression (12 pts) ",
+        "text_level": 1,
+        "bbox": [
+            86,
+            450,
+            383,
+            472
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "In this problem, we will make use of the Auto data set, which is part of the ISLR package and can be directly accessed by the name Auto once the ISLR package is loaded. The dataset contains 9 variables of 392 observations of automobiles. The qualitative variable origin takes three values: 1, 2, and 3, where 1 stands for American car, 2 stands for European car, and 3 stands for Japanese car. ",
+        "bbox": [
+            84,
+            482,
+            915,
+            542
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "1. (2 pts) Fit a linear model to the data, in order to predict mpg using all of the other predictors except for name. Present the estimated coefficients. (2 pts) With a 0.01 threshold, comment on whether you can reject the null hypothesis that there is no linear association between mpg with any of the predictors.   \n2. (2 pts) Take the whole dataset as training set. What is the training mean squared error of this model? Can you calculate the test mean squared error?   \n3. (2 pts) What gas mileage do you predict for an European car with 4 cylinders, displacement 133, horsepower of 117, weight of 3250, acceleration of 29, built in the year 1997? (Be sure to check how year is coded in the dataset).   \n4. (1 pts) On average, holding all other features fixed, what is the difference between the mpg of a Japanese car and the mpg of an American car? (1 pts) What is the difference between the mpg of a European car and the mpg of an American car?   \n5. (2 pts) On average, holding all other predictor variables fixed, what is the change in mpg associated with a 30-unit increase in horsepower? ",
+        "bbox": [
+            102,
+            550,
+            915,
+            777
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Algae Classification using Logistic regression (15 pts) ",
+        "text_level": 1,
+        "bbox": [
+            89,
+            799,
+            705,
+            820
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "The dataset algaeBloom.txt is available on Canvas. Read it in with the following code: ",
+        "bbox": [
+            86,
+            830,
+            718,
+            847
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "algae <- read_table2(\"algaeBloom.txt\", col_names= c('season','size','speed','mxPH','mnO2','Cl','NO3','NH4', 'oPO4','PO4','Chla','a1','a2','a3','a4','a5','a6','a7'), na=\"XXXXXXX\") ",
+        "bbox": [
+            84,
+            852,
+            781,
+            911
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "In homework 1, we investigated basic exploratory data analysis for the algaeBloom dataset. One of the explaining variables is a1, which is a numerical attribute. Here, after standardization, we will transform a1 into a categorical variable with 2 levels: high and low, and conduct its classification using those 11 variables (i.e. everything but a1, a2, a3,. . . , a7). ",
+        "bbox": [
+            84,
+            68,
+            915,
+            128
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "We first improve the normality of the numerical attributes by taking the log of all chemical variables. After log transformation, we impute missing values using the median method. Finally, we transform the variable a1 into a categorical variable with two levels: high if a1 is greater than 5, and low if a1 is smaller than or equal to 5. ",
+        "bbox": [
+            84,
+            136,
+            915,
+            183
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "algae.transformed $< -$ algae $\\% > \\%$ mutate_at(vars(4:11), funs(log(.)))   \nalgae.transformed $< -$ algae.transformed $\\% > \\%$ mutate_at(vars(4:11),funs(ifelse(is.na(.),median(.,na.rm $\\vDash$ TRUE),.)))   \n# $a 1 \\ = = \\ 0$ means low   \nalgae.transformed $< -$ algae.transformed $\\% > \\%$ mutate(a1 $=$ factor(as.integer(a1 > 5), levels $=$ c(0, 1))) ",
+        "bbox": [
+            84,
+            186,
+            931,
+            262
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Classification Task: We will build classification models to classify a1 into high vs. low using the dataset algae.transformed as above, and evaluate its training error rates and test error rates. We define a new function, named calc_error_rate(), that will calculate misclassification error rate. ",
+        "bbox": [
+            84,
+            275,
+            916,
+            321
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "calc_error_rate $< -$ function(predicted.value, true.value){ return(mean(true.value ! $! =$ predicted.value)) } ",
+        "bbox": [
+            84,
+            325,
+            580,
+            371
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Training/test sets: Split randomly the data set in a train and a test set: ",
+        "bbox": [
+            84,
+            383,
+            620,
+            400
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "set.seed(1) ",
+        "text_level": 1,
+        "bbox": [
+            86,
+            405,
+            179,
+            417
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "test.indices $=$ sample(1:nrow(algae.transformed), 50) algae.train $\\cdot ^ { = }$ algae.transformed[-test.indices,] algae.test $\\ l =$ algae.transformed[test.indices,] ",
+        "bbox": [
+            84,
+            420,
+            531,
+            464
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "In a binary classification problem, let $p$ represent the probability of class label “1”, which implies that $1 - p$ represents probability of class label “ $0$ ”. The logistic function (also called the “inverse logit”) is the cumulative distribution function of logistic distribution, which maps a real number $z$ to the open interval $( 0 , 1 )$ : ",
+        "bbox": [
+            86,
+            478,
+            911,
+            525
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "equation",
+        "img_path": "images/809d6110726826a284e972baf1660e5d86abcf921bfa37046ba6e8c24e27319f.jpg",
+        "text": "$$\np ( z ) = \\frac { e ^ { z } } { 1 + e ^ { z } } .\n$$",
+        "text_format": "latex",
+        "bbox": [
+            446,
+            535,
+            552,
+            565
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "1. (2 pts) Prove that indeed the inverse of a logistic function is the logit function: ",
+        "bbox": [
+            101,
+            575,
+            691,
+            592
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "equation",
+        "img_path": "images/23d95261937f9f6276004fcc68fcf6056b0dcfb21117b6170e8365a94270d95c.jpg",
+        "text": "$$\nz ( p ) = \\ln \\left( { \\frac { p } { 1 - p } } \\right) .\n$$",
+        "text_format": "latex",
+        "bbox": [
+            449,
+            602,
+            591,
+            636
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "2. Assume that $z = \\beta _ { 0 } + \\beta _ { 1 } x _ { 1 }$ , and $p = \\mathrm { l o g i s t i c } ( z )$ . (2 pts) How does the odds of the outcome change if you increase $x _ { 1 }$ by two? (1 pts) Assume $\\beta _ { 1 }$ is negative: what value does $p$ approach as $x _ { 1 } \\to \\infty$ ? ( $1$ pts) What value does $p$ approach as $x _ { 1 } \\to - \\infty$ ? ",
+        "bbox": [
+            104,
+            652,
+            913,
+            699
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "3. Use logistic regression to perform classification in the data application above. Logistic regression specifically estimates the probability that an observation as a particular class label. We can define a probability threshold for assigning class labels based on the probabilities returned by the glm fit. ",
+        "bbox": [
+            106,
+            705,
+            915,
+            752
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "In this problem, we will simply use the “majority rule”. If the probability is larger than $5 0 \\%$ class as label “1”. (2 pts) Fit a logistic regression to predict a1 given all other features (excluding a2 to a7) in the dataset using the glm function. (2 pts) Estimate the class labels using the majority rule and (2 pts) calculate the training and test errors using the calc_error_rate defined earlier. ",
+        "bbox": [
+            122,
+            758,
+            913,
+            819
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "For logistic regression one needs to predict type response predict(glm.obj, test.data, type=\"response\") ",
+        "bbox": [
+            125,
+            827,
+            544,
+            843
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "",
+        "bbox": [
+            125,
+            847,
+            504,
+            863
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "4. We will construct ROC curve based on the predictions of the test data from the model we obtained from the logistic regression above. (3 pts) Plot the ROC for the test data for the logistic regression fit. Compute the area under the curve(AUC). ",
+        "bbox": [
+            104,
+            876,
+            913,
+            922
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Hints: In order to construct the ROC curves one needs to use the vector of predicted probabilities for the test data. The usage of the function predict() may be different from model to model. For logistic regression one needs to predict type response, see Lab 4. ",
+        "bbox": [
+            125,
+            68,
+            913,
+            113
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "Algae Classification using Discriminant Analysis (12 pts) ",
+        "text_level": 1,
+        "bbox": [
+            88,
+            161,
+            745,
+            183
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "1. (4 pts) In LDA we assume that $\\Sigma _ { 1 } = \\Sigma _ { 2 }$ . Use LDA to predict whether a1 is high or low using the MASS::lda() function. The CV argument in the MASS::lda function uses Leave-one-out cross validation LOOCV) when estimating the fitted values to avoid overfitting. Set the CV argument to true, so the program will automatically do cross-validation. Plot an ROC curve for the fitted values. ",
+        "bbox": [
+            104,
+            194,
+            913,
+            253
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "2. Quadratic discriminant analysis is strictly more flexible than LDA because it is not required that $\\Sigma _ { 1 } = \\Sigma _ { 2 }$ . In this sense, LDA can be considered a special case of QDA with the covariances constrained to be the same. (2 pts) Use a quadratic discriminant model to predict the a1 using the function MASS::qda. Again setting CV=TRUE and plot the ROC on the same plot as the LDA ROC. (2 pts) Compute the area under the ROC (AUC) for each model. To get the predicted class probabilities look at the value of posterior in the lda and qda objects. (2 pts) Which model has better performance? (2 pts) Briefly explain, in terms of the bias-variance tradeoff, why you believe the better model outperforms the worse model? ",
+        "bbox": [
+            104,
+            261,
+            913,
+            367
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "Fundamentals of the bootstrap (10 pts) ",
+        "text_level": 1,
+        "bbox": [
+            88,
+            390,
+            544,
+            411
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "In the first part of this problem we will explore to understand the fact that approximately $1 / 3$ of the observations in a bootstrap sample are out-of-bag. ",
+        "bbox": [
+            89,
+            421,
+            906,
+            452
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "1. (4 pts) Given a sample of size $n$ , what is the probability that any observation $j$ is not in a bootstrap sample? Express your answer as a function of $n$ .   \n2. (2 pts) Compute the above probability for $n = 1 0 0 0$ .   \n3. (4 pts) Verify that your calculation is reasonable by resampling the numbers 1 to 1000 with replacement and printing the ratio of missing observations. Hint: use the unique and length functions to identify how many unique observations are in the sample. Note that the answer does not have to be exactly the same as what you get in b) due to randomness in sampling. ",
+        "bbox": [
+            98,
+            459,
+            916,
+            580
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "Cross-validation estimate of test error (12 pts) ",
+        "text_level": 1,
+        "bbox": [
+            86,
+            602,
+            625,
+            623
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "In this problem, we will apply cross-validation to estimate test error rate of logistic regression on the Smarket dataset available in ISLR package. The dataset contains daily percentage returns for the S&P 500 stock index between 2001 and 2005. In particular, the data contains 1250 observations on the following 9 variables: ",
+        "bbox": [
+            86,
+            635,
+            913,
+            679
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "• Year: The year that the observation was recorded   \n• Lag1: Percentage return for previous day   \n• Lag2: Percentage return for 2 days previous   \n• Lag3: Percentage return for 3 days previous Lag4: Percentage return for 4 days previous   \n• Lag5: Percentage return for 5 days previous   \n• Volume: Volume of shares traded (number of daily shares traded in billions)   \n• Today: Percentage return for today   \n• Direction: A factor with levels Down and Up indicating whether the market ha on a given day ",
+        "bbox": [
+            109,
+            688,
+            691,
+            838
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "We are interested in building a classifier in order to predict Direction using all variables except for Year and Today as predictors. We do the following transformation to convert the factor response into binary values: 0 for Down and 1 for Up. ",
+        "bbox": [
+            86,
+            845,
+            915,
+            891
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "dat $=$ subset(Smarket, select = -c(Year,Today)) dat\\$Direction $=$ ifelse(dat\\$Direction $^ { -- }$ \"Up\", 1, ",
+        "bbox": [
+            84,
+            897,
+            522,
+            926
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "In this problem, we will again simply use the “majority rule”. If the predicted probability is larger than $5 0 \\%$ , classify the observation as 1. ",
+        "bbox": [
+            89,
+            68,
+            908,
+            98
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "1. (2 pts) Splite dat into a training set of 700 observations, and a test set of the remaining observations. (2 pts) Fit a logistic regression model, on the training data, to predict the Direction using all other variables except for Year and Today as predictors. (2 pts) Calculate the error rate of this model on the test data. Use set.seed(123) in the begining of your answer. 2. (4 pts) Use a 10-fold cross-validation approach on the whole dat to estimate the test error rate. (2 pts) Report the estimated test error rate you obtain. Use set.seed(123) in the begining of your answer. ",
+        "bbox": [
+            96,
+            106,
+            915,
+            204
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "Just as what we did in Lab4, you can use the following key function to carry out k-fold cross-validation. ",
+        "bbox": [
+            84,
+            212,
+            831,
+            227
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "do.chunk $< -$ function(chunkid, folddef, dat, ...){ # Get training index train $=$ (folddef! $=$ chunkid) # Get training set and validation set dat.train $=$ dat[train, ] dat.val $=$ dat[-train, ] # Train logistic regression model on training data fit.train $=$ glm(Direction \\~ ., family $=$ binomial, data $=$ dat.train) # get predicted value on the validation set pred.val $=$ predict(fit.train, newdata $=$ dat.val, type $=$ \"response\") pred.val $=$ ifelse(pred.val $>$ .5, 1,0) data.frame(fold $=$ chunkid, val.error $=$ mean(pred.val ! $! =$ dat.val\\$Direction)) ",
+        "bbox": [
+            83,
+            232,
+            678,
+            460
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "Problems below for 231 students only (12 pts) ",
+        "text_level": 1,
+        "bbox": [
+            84,
+            506,
+            622,
+            529
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "Discrinant functions (12 pts) ",
+        "text_level": 1,
+        "bbox": [
+            88,
+            539,
+            364,
+            558
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "A multivariate normal distribution has density ",
+        "bbox": [
+            84,
+            564,
+            421,
+            579
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "equation",
+        "img_path": "images/ecfc99ba072c16bc32b8bbf2dbf190587911ad96c3d30fa3e30f266e3282f396.jpg",
+        "text": "$$\nf ( x ) = { \\frac { 1 } { ( 2 \\pi ) ^ { p / 2 } | { \\Sigma } | ^ { 1 / 2 } } } e x p \\left( - { \\frac { 1 } { 2 } } ( x - \\mu ) ^ { T } { \\Sigma } ^ { - 1 } ( x - \\mu ) \\right)\n$$",
+        "text_format": "latex",
+        "bbox": [
+            313,
+            587,
+            684,
+            618
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "In quadratic discriminant analysis with two groups we use Bayes rule to calculate the probability that $Y$ has class label “1”: ",
+        "bbox": [
+            86,
+            628,
+            908,
+            660
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "equation",
+        "img_path": "images/c4261e6de60ad4de343bc4c167a23b06c6b34e7ae8c5c00ecadfca56db654acc.jpg",
+        "text": "$$\nP r ( Y = 1 \\mid X = x ) = \\frac { f _ { 1 } ( x ) \\pi _ { 1 } } { \\pi _ { 1 } f _ { 1 } ( x ) + \\pi _ { 2 } f _ { 2 } ( x ) }\n$$",
+        "text_format": "latex",
+        "bbox": [
+            354,
+            679,
+            643,
+            710
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "where $\\pi _ { 2 } = 1 - \\pi _ { 1 }$ is the prior probability of being in group 2. Suppose we classify ${ \\hat { Y } } = k$ whenever $P r ( Y = k \\mid X =$ $x ) > \\tau$ for some probability threshold $\\tau$ and that $f _ { k }$ is a multivariate normal density with covariance $\\Sigma _ { k }$ and mean $\\mu _ { k }$ . Note that for a vector $x$ of length $p$ and a $p \\times p$ symmetric matrix $A$ , $x ^ { T } A x$ is the vector quadratic form (the multivariate analog of $x ^ { 2 }$ ). Show that the decision boundary is indeed quadratic by showing that $\\hat { Y } = 1$ if ",
+        "bbox": [
+            84,
+            722,
+            915,
+            784
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "equation",
+        "img_path": "images/76623cf46d5c3033c2090fef7871015892b5f8017db98be8f9869c5c671044a4.jpg",
+        "text": "$$\n\\delta _ { 1 } ( x ) - \\delta _ { 2 } ( x ) > M ( \\tau )\n$$",
+        "text_format": "latex",
+        "bbox": [
+            421,
+            808,
+            576,
+            821
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "where ",
+        "bbox": [
+            84,
+            833,
+            130,
+            847
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "equation",
+        "img_path": "images/1314ce4f2c4a883f713d6c11ae47ddf641b34ea5a709c66829419d87d3cbb2e0.jpg",
+        "text": "$$\n\\delta _ { k } ( x ) = - { \\frac { 1 } { 2 } } ( x - \\mu _ { k } ) ^ { T } \\Sigma _ { k } ^ { - 1 } ( x - \\mu _ { k } ) - { \\frac { 1 } { 2 } } \\log | \\Sigma _ { k } | + \\log \\pi _ { k }\n$$",
+        "text_format": "latex",
+        "bbox": [
+            303,
+            867,
+            694,
+            895
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "and $M ( \\tau )$ is some function of the probability threshold $\\tau$ . What is the decision threshold, $\\mathrm { M } ( 1 / 2 )$ , corresponding to a probability threshold of $1 / 2$ ? ",
+        "bbox": [
+            84,
+            904,
+            906,
+            935
+        ],
+        "page_idx": 3
+    }
+]
