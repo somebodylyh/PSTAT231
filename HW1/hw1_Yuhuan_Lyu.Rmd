@@ -1,0 +1,227 @@
+---
+title: "Homework Assignment"
+author: "Yuhuan Lyu"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{float}
+---
+
+
+```{r setup, echo=FALSE}
+library(knitr)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+# set global chunk options: images will be 7x5 inches
+knitr::opts_chunk$set(fig.width=7, fig.height=5, echo=FALSE, message=FALSE, warning=FALSE, comment = NA)
+options(digits = 4)
+
+## indents are for indenting r code as formatted text
+## They may need to be adjusted depending on your OS
+# if your output looks odd, increase or decrease indent
+indent1 = '    '
+indent2 = '        '
+indent3 = '            '
+```
+
+
+1. Descriptive summary statistics (10 pts in total) Given the lack of further information on the
+    problem domain, it is wise to investigate some of the statistical properties of the data, so as to get a
+    better grasp of the problem. It is always a good idea to start our analysis with some kind of exploratory
+    data analysis. A first idea of the statistical properties of the data can be obtained through a summary
+    of its descriptive statistics.
+    * (a) 
+```{r , indent=indent2}
+algae <- read_table("algaeBloom.txt", col_names=
+        c('season','size','speed','mxPH','mnO2','Cl','NO3','NH4',
+        'oPO4','PO4','Chla','a1','a2','a3','a4','a5','a6','a7'),
+        na="XXXXXXX")
+glimpse(algae)
+algae %>%
+    group_by(season) %>%
+    summarise(n = n())
+```
+    * (b)
+```{r , indent=indent2}
+
+sum(is.na(algae)) 
+
+chemical_stats <- algae %>%
+    select(mxPH:Chla) %>%
+    summarise(across(everything(), 
+                     list(mean = ~mean(., na.rm = TRUE),
+                          var = ~var(., na.rm = TRUE)))) %>%
+    pivot_longer(everything(), 
+                 names_to = c("chemical", ".value"),
+                 names_pattern = "(.*)_(mean|var)")
+
+print(chemical_stats)
+```
+Based on the output above, we observe significant differences in the magnitude of means and variances across chemical variables.
+    * (c)
+```{r , indent=indent2}
+mad_median <- function(x) {
+    med <- median(x, na.rm = TRUE)
+    abs_dev <- abs(x - med)
+    mad <- median(abs_dev, na.rm = TRUE)
+    return(mad)
+}
+chemical_comparison <- algae %>%
+    select(mxPH:Chla) %>%
+    summarise(across(everything(), 
+                     list(
+                         mean = ~mean(., na.rm = TRUE),
+                         var = ~var(., na.rm = TRUE),
+                         median = ~median(., na.rm = TRUE),
+                         mad = ~mad_median(.)  
+                     )))
+
+comparison_long <- chemical_comparison %>%
+    pivot_longer(everything(),
+                 names_to = c("chemical", ".value"),
+                 names_pattern = "(.*)_(mean|var|median|mad)")
+
+print(comparison_long)  
+
+```
+Most chemicals (NH4, oPO4, PO4, Chla) exhibit **right-skewed distributions with extreme outliers**, as evidenced variance >> MAD², indicating that **median and MAD are more robust and representative** measures for this dataset.
+
+2. Data visualization (8 pts in total) Most of the time, the information in the data set is also well
+    captured graphically. Histogram, scatter plot, boxplot, Q-Q plot are frequently used tools for data
+    visualization. Use ggplot for all of these visualizations.
+    
+    * (a)
+    
+        ```{r  out.width='0.6\\linewidth', fig.show='hold', fig.align='center', fig.cap='(a) Histogram of NH4', fig.pos='H'}
+        ggplot(algae, aes(x = NH4)) +
+            geom_histogram(aes(y = after_stat(density)), binwidth = 100, fill = "steelblue", alpha = 0.7) + 
+            labs(title = "'Histogram of NH4'", x = "NH4", y = "Probability") +
+            theme_minimal()
+        ```
+        
+        The distribution is left-skewed, as the tail extends more to the left side.
+    
+    * (b)
+    
+        ```{r  out.width='0.6\\linewidth', fig.show='hold', fig.align='center', fig.cap='(b) Histogram of NH4 with density and rug', fig.pos='H'}
+        ggplot(algae, aes(x = NH4)) +
+            geom_histogram(aes(y = after_stat(density)), binwidth = 100, fill = "steelblue", alpha = 0.7) +
+            geom_density(color = "red", linewidth = 1) +
+            geom_rug(color = "darkgreen", alpha = 0.6) +
+            labs(title = "'Histogram of NH4'", x = "NH4", y = "Probability") +
+            theme_minimal()
+        ```
+    
+    * (c)
+    
+        ```{r  out.width='0.6\\linewidth', fig.show='hold', fig.align='center', fig.cap='(c) Boxplot of a4 grouped by speed', fig.pos='H'}
+        ggplot(algae, aes(x = speed, y = a4)) +
+            geom_boxplot() +
+            labs(title = "'A conditioned Boxplot of Algal a4'", x = "Speed", y = "a4") +
+            theme_minimal()
+        ```
+        
+        Through observing the a4 boxplot grouped by speed, I notice that all speed groups have medians and quartiles very close to zero, with the box bodies almost touching the x-axis, indicating that most a4 values are concentrated near zero and algal a4 concentrations are generally very low. The main differences are reflected in the outliers, where the medium speed group has the highest outlier around 44, the high speed group has the second highest outlier around 29, and the low speed group has relatively lower outliers with the highest around 7. All groups contain multiple outliers, but the overall distribution patterns are similar, suggesting that in most cases, water flow speed has little effect on a4 concentration, but there may be differences in extreme circumstances.
+
+3. Dealing with missing values
+    * (a)
+```{r , indent=indent2}
+obs_with_na <- algae %>%
+    filter(if_any(everything(), is.na)) %>%
+    nrow()
+
+cat("(1) Number of observations containing missing values:", obs_with_na, "\n\n")
+
+cat("(2) Missing values in each variable:\n")
+missing_per_var <- algae %>%
+    summarise(across(everything(), ~sum(is.na(.)))) %>%
+    pivot_longer(everything(), names_to = "Variable", values_to = "Missing_Count") %>%
+    filter(Missing_Count > 0)
+
+print(missing_per_var)
+```
+    * (b)
+```{r , indent=indent2}
+algae.del <- algae %>%
+    filter(complete.cases(.))
+
+cat("Number of observations in algae.del (after removing rows with missing values):", nrow(algae.del), "\n")
+```
+
+4. In lecture we present the bias-variance tradeoff that takes the form $\cdots$
+
+    * (a)
+    The reducible error consists of the terms $\operatorname{Var}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)$ and $\left[\operatorname{Bias}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)\right]^{2}$. These terms are called "reducible" because they can be reduced by improving our model estimation $\hat{f}(\cdot)$ through better model selection, more training data, or improved estimation methods.
+
+    The irreducible error is represented by the term $\operatorname{Var}(\varepsilon)$. This error is called "irreducible" because it represents the inherent randomness in the relationship between $X$ and $Y$ that cannot be eliminated by any model, no matter how sophisticated. It comes from unmeasured variables, natural variability, or measurement error in the response variable.
+
+    * (b)
+    
+    Using the bias-variance tradeoff formula:
+    $$\mathrm{E}\left[\left(y_{0}-\hat{f}\left(\mathbf{x}_{0}\right)\right)^{2}\right]=\operatorname{Var}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)+\left[\operatorname{Bias}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)\right]^{2}+\operatorname{Var}(\varepsilon)$$
+
+    **Proof:**
+
+    Since variance is always non-negative, we have:
+    - $\operatorname{Var}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right) \geq 0$
+    - $\left[\operatorname{Bias}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)\right]^{2} \geq 0$ (since any real number squared is non-negative)
+
+    Therefore:
+    $$\mathrm{E}\left[\left(y_{0}-\hat{f}\left(\mathbf{x}_{0}\right)\right)^{2}\right] = \operatorname{Var}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)+\left[\operatorname{Bias}\left(\hat{f}\left(\mathbf{x}_{0}\right)\right)\right]^{2}+\operatorname{Var}(\varepsilon) \geq \operatorname{Var}(\varepsilon)$$
+
+    This shows that the expected test error $\mathrm{E}\left[\left(y_{0}-\hat{f}\left(\mathbf{x}_{0}\right)\right)^{2}\right]$ is always at least as large as the irreducible error $\operatorname{Var}(\varepsilon)$.
+
+5. (231 Only) Prove the bias-variance tradeoff
+
+    **Proof:** Let $Y_0=f(x_0)+\varepsilon$, with $E[\varepsilon]=0$ and $\varepsilon$ independent of $\hat f(x_0)$.
+    
+    (1) Split the test error into signal and noise:
+    $$E[(Y_0-\hat f(x_0))^2]=E[(f(x_0)+\varepsilon-\hat f(x_0))^2]
+    =E[(f(x_0)-\hat f(x_0))^2]+E[\varepsilon^2]
+    =E[(f(x_0)-\hat f(x_0))^2]+\operatorname{Var}(\varepsilon).$$
+    (The cross term vanishes since $E[\varepsilon]=0$ and is independent.)
+
+    (2) Decompose the first term into variance and squared bias. Let $a=E[\hat f(x_0)]$:
+    $$E[(f(x_0)-\hat f(x_0))^2]=E[(f(x_0)-a+a-\hat f(x_0))^2]
+    =(f(x_0)-a)^2+E[(a-\hat f(x_0))^2]+2(f(x_0)-a)E[a-\hat f(x_0)].$$
+    Since $E[a-\hat f(x_0)]=a-E[\hat f(x_0)]=0$, we obtain
+    $$E[(f(x_0)-\hat f(x_0))^2]=[\operatorname{Bias}(\hat f(x_0))]^2+\operatorname{Var}(\hat f(x_0)).$$
+
+    (3) Combine (1) and (2):
+    $$E[(Y_0-\hat f(x_0))^2]=\operatorname{Var}(\hat f(x_0))+[\operatorname{Bias}(\hat f(x_0))]^2+\operatorname{Var}(\varepsilon).$$
+    This is the bias–variance tradeoff.
+
+6. (231 Only) For $\hat f(x_0)=E[Y\mid X=x_0]$, show $\operatorname{Bias}(\hat f(x_0))=\operatorname{Var}(\hat f(x_0))=0$.
+
+    **Proof:** Define the true regression function $f(x_0):=E[Y\mid X=x_0]$. If we take $\hat f(x_0)$ to be exactly this population quantity, then $\hat f(x_0)=f(x_0)$ is a deterministic constant (it does not depend on a training sample).
+
+    - Bias: $\operatorname{Bias}(\hat f(x_0))=E[\hat f(x_0)]-f(x_0)=f(x_0)-f(x_0)=0$.
+    - Variance: since $\hat f(x_0)$ is constant across training sets, $\operatorname{Var}(\hat f(x_0))=0$.
+
+    Hence both the bias and the variance are zero.
+
+7. (231 Only)Show that the following measures are distance metrics by showing the above properties hold:
+    * (1)$d(x,y)=\||x-y\||_2$
+        **Proof:**
+
+        - Positivity: $d(x,y)=(\sum_{i=1}^n (x_i - y_i)^2)^{1/2} \geq 0$
+        - Symmetry: $d(x,y)=(\sum_{i=1}^n (x_i - y_i)^2)^{1/2}=(\sum_{i=1}^n (y_i - x_i)^2)^{1/2}=d(y,x)$
+        - Triangle inequality: Let $a=x-y$ and $b=y-z$. Then $x-z=a+b$ and
+            $$\|x-z\|_2=\|a+b\|_2,\quad \|a+b\|_2^2=(a+b)\cdot(a+b)=\|a\|_2^2+\|b\|_2^2+2\,a\cdot b\\
+            \le \|a\|_2^2+\|b\|_2^2+2\,\|a\|_2\,\|b\|_2\ \ (\text{by Cauchy--Schwarz})=(\|a\|_2+\|b\|_2)^2.$$
+            Taking square roots gives $\|x-z\|_2\le \|x-y\|_2+\|y-z\|_2$, i.e., $d(x,z)\le d(x,y)+d(y,z)$.
+    * (2)$d(x,y)=\|x-y\|_\infty$
+        **Proof:**
+
+        - Positivity: $d(x,y)=\max_{i=1}^n |x_i - y_i| \geq 0$
+        - Symmetry: $d(x,y)=\max_{i=1}^n |x_i - y_i|=\max_{i=1}^n |y_i - x_i|=d(y,x)$
+        - Triangle inequality: Let $a=x-y$ and $b=y-z$. Then $x-z=a+b$ and
+            $$\|x-z\|_\infty=\max_{i=1}^n |x_i - z_i|=\max_{i=1}^n |(x_i - y_i) + (y_i - z_i)|\\
+            \le \max_{i=1}^n |x_i - y_i| + \max_{i=1}^n |y_i - z_i|=\|x-y\|_\infty+\|y-z\|_\infty,$$
+            i.e., $d(x,z)\le d(x,y)+d(y,z)$.
+
+    
